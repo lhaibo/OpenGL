@@ -134,7 +134,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-//检测用户是否按下ESC键，若按下则关闭GLFW窗口
+
+//检测用户是否按键
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
