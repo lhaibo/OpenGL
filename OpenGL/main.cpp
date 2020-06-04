@@ -12,26 +12,40 @@ const GLuint WIDTH = 800, HEIGHT = 600;
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-//数据
+//顶点数据
 float vertices[] = {
-	-0.5f,-0.5f,0.0f,
-	0.5f,-0.5f,0.0f,
-	0.0f,0.5f,0.0f
+	-0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,
+	0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,
+	0.0f,0.5f,0.0f,0.0f,0.0f,1.0f,
+	//-0.5f,-0.5f,0.0f,
+	//0.5f,-0.5f,0.0f,
+	0.8f,-0.8f,0.0f,1.0f,0.0f,1.0f,
+};
+
+unsigned int indices[] = {
+	0,1,2,
+	0,1,3
 };
 
 //Vertex Shader
 const char* vertexShaderSource =
 "#version 330 core\n"
 "layout(location = 0) in vec3 aPos;\n"
+"layout(location = 6) in vec3 aColor;\n"
+"out vec4 vertexColor;\n"
 "void main(){\n"
-"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}\n";
+"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"	vertexColor= vec4(aColor.x,aColor.y,aColor.z,1.0);\n"
+"}\n";
 
 //Fragment Shader
 const char* fragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
+"uniform vec4 myColor;\n"
 "void main(){\n"
-"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}\n";
+"	FragColor = vec4(vertexColor.x,vertexColor.y,vertexColor.z,vertexColor.w);}\n";
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
@@ -68,6 +82,11 @@ int main()
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);//设置opengl渲染窗口的尺寸大小
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//线框模式
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);//不渲染背面
+
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//绑定回调函数
 
 	//
@@ -79,9 +98,13 @@ int main()
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);//将顶点缓冲对象绑定到GL_ARRAY_BUFFER
-
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);//把数据复制到当前绑定缓冲
-	
+	//
+	unsigned int EBO;
+	glGenBuffers(1,&EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	//创建顶点着色器
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -101,8 +124,11 @@ int main()
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(6);
 
 	// Game loop 游戏循环
 	while (!glfwWindowShouldClose(window))//渲染循环
@@ -117,9 +143,16 @@ int main()
 
 		// 渲染指令
 		glBindVertexArray(VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		float redValue= (cos(timeValue) / 2.0f) + 0.5f;
+		float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "myColor");
 		glUseProgram(shaderProgram);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
+		glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
 		//检测并调用事件
 		glfwPollEvents();
 		glfwSwapBuffers(window);//每一帧绘制（交换缓冲）
