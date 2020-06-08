@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Shader.h"
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -18,7 +20,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 //顶点数据
 float vertices[] = {
-		 // positions          // colors           // texture coords
+		 // positions          // colors           // texture coords (UV)
 		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
 		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
@@ -29,6 +31,9 @@ unsigned int indices[] = {
 	0,1,2,
 	0,2,3
 };
+
+//变换矩阵
+glm::mat4 trans;
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
@@ -93,9 +98,10 @@ int main()
 	//Shader
 	Shader* myShader = new Shader("vertexSource.txt","fragmentSource.txt");
 	
-	unsigned int textureBuffer;
-	glGenTextures(1, &textureBuffer);
-	glBindTexture(GL_TEXTURE_2D, textureBuffer);
+	unsigned int textureBufferA;
+	glGenTextures(1, &textureBufferA);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureBufferA);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -103,6 +109,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int width, height, nrChannel;
+	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannel, 0);
 	if (data)
 	{
@@ -114,6 +121,22 @@ int main()
 		printf("load image failed!\n");
 	}
 	stbi_image_free(data);
+
+	unsigned int textureBufferB;
+	glGenTextures(1, &textureBufferB);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, textureBufferB);
+	unsigned char* data2 = stbi_load("awesomeface.jpg", &width, &height, &nrChannel, 0);
+	if (data2)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("load image failed!\n");
+	}
+	stbi_image_free(data2);
 #pragma region Shader
 	////创建顶点着色器
 //unsigned int vertexShader;
@@ -144,6 +167,12 @@ int main()
 	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(7);
 
+	
+	unsigned int transformLoc = glGetUniformLocation(myShader->id, "transform");
+	
+	trans = glm::mat4(1.0f);
+
+
 	// Game loop 游戏循环
 	while (!glfwWindowShouldClose(window))//渲染循环
 	{
@@ -156,7 +185,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
 
 		//
-		glBindTexture(GL_TEXTURE_2D, textureBuffer);
+		//glBindTexture(GL_TEXTURE_2D, textureBufferA);
 
 		// 渲染指令
 		glBindVertexArray(VAO);
@@ -173,6 +202,10 @@ int main()
 		//shader->use()
 		myShader->use();
 
+		glUniform1i(glGetUniformLocation(myShader->id, "ourTexture"),0);
+		glUniform1i(glGetUniformLocation(myShader->id, "ourFace"),3);
+		//trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
 		//检测并调用事件
@@ -195,4 +228,12 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window,GLFW_KEY_A)==GLFW_PRESS)
+	{
+		trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		trans = glm::translate(trans, glm::vec3(0.01f, 0, 0));
+	}
 }
