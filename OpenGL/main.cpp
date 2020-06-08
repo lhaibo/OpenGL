@@ -1,4 +1,8 @@
 #include <iostream>
+#include "Shader.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // GLEW
 #define GLEW_STATIC
@@ -14,42 +18,22 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 //顶点数据
 float vertices[] = {
-	-0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,
-	0.5f,-0.5f,0.0f,0.0f,1.0f,0.0f,
-	0.0f,0.5f,0.0f,0.0f,0.0f,1.0f,
-	//-0.5f,-0.5f,0.0f,
-	//0.5f,-0.5f,0.0f,
-	0.8f,-0.8f,0.0f,1.0f,0.0f,1.0f,
+		 // positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
 };
 
 unsigned int indices[] = {
 	0,1,2,
-	0,1,3
+	0,2,3
 };
-
-//Vertex Shader
-const char* vertexShaderSource =
-"#version 330 core\n"
-"layout(location = 0) in vec3 aPos;\n"
-"layout(location = 6) in vec3 aColor;\n"
-"out vec4 vertexColor;\n"
-"void main(){\n"
-"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"	vertexColor= vec4(aColor.x,aColor.y,aColor.z,1.0);\n"
-"}\n";
-
-//Fragment Shader
-const char* fragmentShaderSource =
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec4 vertexColor;\n"
-"uniform vec4 myColor;\n"
-"void main(){\n"
-"	FragColor = vec4(vertexColor.x,vertexColor.y,vertexColor.z,vertexColor.w);}\n";
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
 {
+	
 	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
 	// Init GLFW 初始化GLFW
 	glfwInit();
@@ -79,15 +63,16 @@ int main()
 	}
 
 	// Define the viewport dimensions
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);//设置opengl渲染窗口的尺寸大小
+	int WIDTH, HEIGHT;
+	glfwGetFramebufferSize(window, &WIDTH, &HEIGHT);
+	glViewport(0, 0, WIDTH, HEIGHT);//设置opengl渲染窗口的尺寸大小
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//线框模式
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);//不渲染背面
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//绑定回调函数
+
 
 	//
 	unsigned int VAO;
@@ -105,30 +90,59 @@ int main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	//创建顶点着色器
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
+	//Shader
+	Shader* myShader = new Shader("vertexSource.txt","fragmentSource.txt");
+	
+	unsigned int textureBuffer;
+	glGenTextures(1, &textureBuffer);
+	glBindTexture(GL_TEXTURE_2D, textureBuffer);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//创建片面着色器
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
+	int width, height, nrChannel;
+	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannel, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,width,height,0,GL_RGB,GL_UNSIGNED_BYTE,data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("load image failed!\n");
+	}
+	stbi_image_free(data);
+#pragma region Shader
+	////创建顶点着色器
+//unsigned int vertexShader;
+//vertexShader = glCreateShader(GL_VERTEX_SHADER);
+//glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+//glCompileShader(vertexShader);
 
-	//创建着色器程序
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
+////创建片面着色器
+//unsigned int fragmentShader;
+//fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+//glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+//glCompileShader(fragmentShader);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+////创建着色器程序
+//unsigned int shaderProgram;
+//shaderProgram = glCreateProgram();
+//glAttachShader(shaderProgram, vertexShader);
+//glAttachShader(shaderProgram, fragmentShader);
+//glLinkProgram(shaderProgram);  
+#pragma endregion
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(6);
+
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(7);
 
 	// Game loop 游戏循环
 	while (!glfwWindowShouldClose(window))//渲染循环
@@ -141,16 +155,24 @@ int main()
 		//状态使用函数
 		glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
 
+		//
+		glBindTexture(GL_TEXTURE_2D, textureBuffer);
+
 		// 渲染指令
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		float redValue= (cos(timeValue) / 2.0f) + 0.5f;
-		float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "myColor");
-		glUseProgram(shaderProgram);
-		glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
+
+		//float timeValue = glfwGetTime();
+		//float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		//float redValue= (cos(timeValue) / 2.0f) + 0.5f;
+		//float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
+		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "myColor");
+		//glUseProgram(shaderProgram);
+		//glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
+		
+		//shader->use()
+		myShader->use();
+
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
 		//检测并调用事件
