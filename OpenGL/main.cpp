@@ -168,9 +168,18 @@ int main()
 	glEnableVertexAttribArray(7);
 
 	
-	unsigned int transformLoc = glGetUniformLocation(myShader->id, "transform");
+	//unsigned int transformLoc = glGetUniformLocation(myShader->id, "transform");
 	
 	trans = glm::mat4(1.0f);
+
+	glm::mat4 modelMat=glm::mat4(1.0f);
+	modelMat = glm::rotate(modelMat, glm::radians(-55.0f), glm::vec3(1.0f, 0, 0));
+	
+	glm::mat4 viewMat = glm::mat4(1.0f);
+	viewMat = glm::translate(viewMat, glm::vec3(0, 0, -3.0f));
+
+	glm::mat4 projMat = glm::mat4(1.0f);
+	projMat = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
 
 	// Game loop 游戏循环
@@ -205,7 +214,13 @@ int main()
 		glUniform1i(glGetUniformLocation(myShader->id, "ourTexture"),0);
 		glUniform1i(glGetUniformLocation(myShader->id, "ourFace"),3);
 		//trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "trans"), 1, GL_FALSE, glm::value_ptr(trans));
+
+		
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
 		//检测并调用事件
