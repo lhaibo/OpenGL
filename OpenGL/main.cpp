@@ -20,17 +20,77 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 //顶点数据
 float vertices[] = {
-		 // positions          // colors           // texture coords (UV)
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+		// // positions          // colors           // texture coords (UV)
+		// 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+		// 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+		//-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+		//-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+		//position				//texture coords(UV)
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
 unsigned int indices[] = {
 	0,1,2,
-	0,2,3
+	3,4,5,
+	6,7,8,
+	9,10,11,
+	12,13,14,
+	15,16,17
 };
+
+glm::vec3 cubePositions[] = {
+	glm::vec3(0.0f,  0.0f,  0.0f),
+	glm::vec3(2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3(1.3f, -2.0f, -2.5f),
+	glm::vec3(1.5f,  2.0f, -2.5f),
+	glm::vec3(1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
 
 //变换矩阵
 glm::mat4 trans;
@@ -75,6 +135,7 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);//线框模式
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);//不渲染背面
+	glEnable(GL_DEPTH_TEST);//开启灰度测试(z buffer)
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//绑定回调函数
 
@@ -158,13 +219,13 @@ int main()
 //glLinkProgram(shaderProgram);  
 #pragma endregion
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-	glEnableVertexAttribArray(6);
+	/*glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(6);*/
 
-	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(7, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(7);
 
 	
@@ -174,7 +235,8 @@ int main()
 
 	glm::mat4 modelMat=glm::mat4(1.0f);
 	modelMat = glm::rotate(modelMat, glm::radians(-55.0f), glm::vec3(1.0f, 0, 0));
-	
+	modelMat = glm::rotate(modelMat, glm::radians(-55.0f), glm::vec3(0, 1.0f, 0));
+
 	glm::mat4 viewMat = glm::mat4(1.0f);
 	viewMat = glm::translate(viewMat, glm::vec3(0, 0, -3.0f));
 
@@ -191,8 +253,8 @@ int main()
 		//状态设置函数
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);//用一种颜色清空屏幕
 		//状态使用函数
-		glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
-
+		//glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//清空颜色缓冲以及灰度缓冲
 		//
 		//glBindTexture(GL_TEXTURE_2D, textureBufferA);
 
@@ -208,21 +270,45 @@ int main()
 		//glUseProgram(shaderProgram);
 		//glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
 		
+		for (int i = 0; i < 10; i++)
+		{
+			glm::mat4 modelMat2 = glm::mat4(1.0f);
+			modelMat2 = glm::translate(modelMat2, cubePositions[i]);
+
+			myShader->use();
+
+			glUniform1i(glGetUniformLocation(myShader->id, "ourTexture"), 0);
+			glUniform1i(glGetUniformLocation(myShader->id, "ourFace"), 3);
+			//trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
+			//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->id, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat2));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->id, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->id, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->id, "trans"), 1, GL_FALSE, glm::value_ptr(trans));
+
+
+			//glDrawArrays(GL_TRIANGLES, 0, 6);
+
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
 		//shader->use()
-		myShader->use();
+		//myShader->use();
 
-		glUniform1i(glGetUniformLocation(myShader->id, "ourTexture"),0);
-		glUniform1i(glGetUniformLocation(myShader->id, "ourFace"),3);
-		//trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
-		//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
-		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
-		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
-		glUniformMatrix4fv(glGetUniformLocation(myShader->id, "trans"), 1, GL_FALSE, glm::value_ptr(trans));
+		//glUniform1i(glGetUniformLocation(myShader->id, "ourTexture"),0);
+		//glUniform1i(glGetUniformLocation(myShader->id, "ourFace"),3);
+		////trans = glm::translate(trans, glm::vec3(-0.01f, 0, 0));
+		////glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		//glUniformMatrix4fv(glGetUniformLocation(myShader->id, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+		//glUniformMatrix4fv(glGetUniformLocation(myShader->id, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+		//glUniformMatrix4fv(glGetUniformLocation(myShader->id, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
+		//glUniformMatrix4fv(glGetUniformLocation(myShader->id, "trans"), 1, GL_FALSE, glm::value_ptr(trans));
 
-		
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
+		//
+		////glDrawArrays(GL_TRIANGLES, 0, 6);
+		//
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT,0);
 		//检测并调用事件
 		glfwPollEvents();
 		glfwSwapBuffers(window);//每一帧绘制（交换缓冲）
