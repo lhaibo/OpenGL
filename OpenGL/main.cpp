@@ -96,7 +96,7 @@ glm::vec3 cubePositions[] = {
 glm::mat4 trans;
 
 // The MAIN function, from here we start the application and run the game loop
-int main()
+int realmain()
 {
 	
 	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
