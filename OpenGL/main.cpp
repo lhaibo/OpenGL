@@ -157,7 +157,7 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Shader
-	Shader* myShader = new Shader("vertexSource.txt","fragmentSource.txt");
+	Shader* myShader = new Shader("vertexSource.vert","fragmentSource.frag");
 	
 	unsigned int textureBufferA;
 	glGenTextures(1, &textureBufferA);
